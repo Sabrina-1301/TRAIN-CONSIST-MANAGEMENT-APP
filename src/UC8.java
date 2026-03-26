@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.*;
 
 // Bogie Class
 class Bogie {
@@ -21,14 +22,14 @@ class Bogie {
 // Train Class
 class Train {
     String trainName;
-    ArrayList<Bogie> bogies; // List allows sorting
+    ArrayList<Bogie> bogies;
 
     Train(String trainName) {
         this.trainName = trainName;
         this.bogies = new ArrayList<>();
     }
 
-    // Add bogie (ensure uniqueness by ID)
+    // Add bogie
     void addBogie(Bogie b) {
         for (Bogie existing : bogies) {
             if (existing.bogieId.equals(b.bogieId)) {
@@ -40,29 +41,24 @@ class Train {
         System.out.println("Bogie " + b.bogieId + " added.");
     }
 
-    // Sort bogies by capacity (descending)
-    void sortBogiesByCapacity() {
-        bogies.sort(new Comparator<Bogie>() {
-            @Override
-            public int compare(Bogie b1, Bogie b2) {
-                return b2.capacity - b1.capacity; // descending
-            }
-        });
-        System.out.println("Bogies sorted by capacity (high → low).");
+    // Filter passenger bogies by minimum capacity using Stream
+    List<Bogie> filterPassengerBogies(int minCapacity) {
+        return bogies.stream()
+                .filter(b -> b.type.equalsIgnoreCase("Passenger") || b.type.equalsIgnoreCase("Sleeper") || b.type.equalsIgnoreCase("AC"))
+                .filter(b -> b.capacity >= minCapacity)
+                .collect(Collectors.toList());
     }
 
     // Display bogies
-    void displayBogies() {
-        System.out.println("Train: " + trainName);
-        System.out.println("Total Bogies: " + bogies.size());
-        for (Bogie b : bogies) {
+    void displayBogies(List<Bogie> bogieList) {
+        for (Bogie b : bogieList) {
             System.out.println(b);
         }
     }
 }
 
 // Main Class
-public class UC7 {
+public class UC8 {
 
     public static void main(String[] args) {
 
@@ -70,19 +66,16 @@ public class UC7 {
 
         // Add bogies
         train.addBogie(new Bogie("BG101", "Sleeper", 72));
-        train.addBogie(new Bogie("BG102", "AC Chair", 56));
+        train.addBogie(new Bogie("BG102", "AC", 56));
         train.addBogie(new Bogie("BG103", "General", 90));
-        train.addBogie(new Bogie("BG104", "AC Sleeper", 48));
+        train.addBogie(new Bogie("BG104", "Cargo", 120));
 
-        // Display original order
-        System.out.println("Original bogie order:");
-        train.displayBogies();
+        System.out.println("\nAll Bogies:");
+        train.displayBogies(train.bogies);
 
-        // Sort by capacity
-        train.sortBogiesByCapacity();
-
-        // Display sorted order
-        System.out.println("\nAfter sorting by capacity:");
-        train.displayBogies();
+        // Filter passenger bogies with capacity >= 60
+        System.out.println("\nFiltered Passenger Bogies (capacity >= 60):");
+        List<Bogie> filtered = train.filterPassengerBogies(60);
+        train.displayBogies(filtered);
     }
 }
