@@ -4,7 +4,7 @@ import java.util.stream.*;
 // Bogie Class
 class Bogie {
     String bogieId;
-    String type; // Passenger, Cargo, etc.
+    String type; // Passenger, Cargo, Sleeper, AC, etc.
     int capacity;
 
     Bogie(String bogieId, String type, int capacity) {
@@ -41,24 +41,23 @@ class Train {
         System.out.println("Bogie " + b.bogieId + " added.");
     }
 
-    // Filter passenger bogies by minimum capacity using Stream
-    List<Bogie> filterPassengerBogies(int minCapacity) {
+    // Group bogies by type
+    Map<String, List<Bogie>> groupBogiesByType() {
         return bogies.stream()
-                .filter(b -> b.type.equalsIgnoreCase("Passenger") || b.type.equalsIgnoreCase("Sleeper") || b.type.equalsIgnoreCase("AC"))
-                .filter(b -> b.capacity >= minCapacity)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(b -> b.type));
     }
 
-    // Display bogies
-    void displayBogies(List<Bogie> bogieList) {
-        for (Bogie b : bogieList) {
-            System.out.println(b);
+    // Display grouped bogies
+    void displayGroupedBogies(Map<String, List<Bogie>> grouped) {
+        for (String type : grouped.keySet()) {
+            System.out.println("\nBogie Type: " + type);
+            grouped.get(type).forEach(b -> System.out.println(b));
         }
     }
 }
 
 // Main Class
-public class UC8 {
+public class UC9 {
 
     public static void main(String[] args) {
 
@@ -69,13 +68,13 @@ public class UC8 {
         train.addBogie(new Bogie("BG102", "AC", 56));
         train.addBogie(new Bogie("BG103", "General", 90));
         train.addBogie(new Bogie("BG104", "Cargo", 120));
+        train.addBogie(new Bogie("BG105", "AC", 50));
+        train.addBogie(new Bogie("BG106", "Sleeper", 80));
 
-        System.out.println("\nAll Bogies:");
-        train.displayBogies(train.bogies);
+        // Group bogies by type
+        Map<String, List<Bogie>> grouped = train.groupBogiesByType();
 
-        // Filter passenger bogies with capacity >= 60
-        System.out.println("\nFiltered Passenger Bogies (capacity >= 60):");
-        List<Bogie> filtered = train.filterPassengerBogies(60);
-        train.displayBogies(filtered);
+        // Display grouped bogies
+        train.displayGroupedBogies(grouped);
     }
 }
