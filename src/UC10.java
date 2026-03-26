@@ -4,7 +4,7 @@ import java.util.stream.*;
 // Bogie Class
 class Bogie {
     String bogieId;
-    String type; // Passenger, Cargo, Sleeper, AC, etc.
+    String type; // Passenger, Cargo, etc.
     int capacity;
 
     Bogie(String bogieId, String type, int capacity) {
@@ -41,23 +41,23 @@ class Train {
         System.out.println("Bogie " + b.bogieId + " added.");
     }
 
-    // Group bogies by type
-    Map<String, List<Bogie>> groupBogiesByType() {
+    // Compute total passenger seats using reduce
+    int totalPassengerSeats() {
         return bogies.stream()
-                .collect(Collectors.groupingBy(b -> b.type));
+                .filter(b -> b.type.equalsIgnoreCase("Passenger") || b.type.equalsIgnoreCase("Sleeper") || b.type.equalsIgnoreCase("AC"))
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
     }
 
-    // Display grouped bogies
-    void displayGroupedBogies(Map<String, List<Bogie>> grouped) {
-        for (String type : grouped.keySet()) {
-            System.out.println("\nBogie Type: " + type);
-            grouped.get(type).forEach(b -> System.out.println(b));
-        }
+    // Display all bogies
+    void displayBogies() {
+        System.out.println("Train: " + trainName);
+        bogies.forEach(System.out::println);
     }
 }
 
 // Main Class
-public class UC9 {
+public class UC10 {
 
     public static void main(String[] args) {
 
@@ -71,10 +71,12 @@ public class UC9 {
         train.addBogie(new Bogie("BG105", "AC", 50));
         train.addBogie(new Bogie("BG106", "Sleeper", 80));
 
-        // Group bogies by type
-        Map<String, List<Bogie>> grouped = train.groupBogiesByType();
+        // Display all bogies
+        System.out.println("\nAll Bogies:");
+        train.displayBogies();
 
-        // Display grouped bogies
-        train.displayGroupedBogies(grouped);
+        // Calculate total passenger seats
+        int totalSeats = train.totalPassengerSeats();
+        System.out.println("\nTotal Passenger Seats in Train: " + totalSeats);
     }
 }
