@@ -11,25 +11,38 @@ class Bogie {
         this.type = type;
         this.capacity = capacity;
     }
+
+    @Override
+    public String toString() {
+        return bogieId + " - " + type + " - Capacity: " + capacity;
+    }
 }
 
 // Train Class
 class Train {
     String trainName;
     ArrayList<Bogie> bogies;
+    HashSet<String> uniqueBogieIds;
 
     Train(String trainName) {
         this.trainName = trainName;
         this.bogies = new ArrayList<>();
+        this.uniqueBogieIds = new HashSet<>();
     }
 
-    // Add bogie
+    // Add bogie with uniqueness check
     void addBogie(Bogie b) {
+        if (uniqueBogieIds.contains(b.bogieId)) {
+            System.out.println("Error: Bogie ID " + b.bogieId + " already exists. Cannot add duplicate.");
+            return;
+        }
+
         bogies.add(b);
-        System.out.println("Bogie " + b.bogieId + " added.");
+        uniqueBogieIds.add(b.bogieId);
+        System.out.println("Bogie " + b.bogieId + " added successfully.");
     }
 
-    // Remove bogie by ID
+    // Remove bogie
     void removeBogie(String bogieId) {
         Iterator<Bogie> it = bogies.iterator();
         boolean found = false;
@@ -38,7 +51,8 @@ class Train {
             Bogie b = it.next();
             if (b.bogieId.equals(bogieId)) {
                 it.remove();
-                System.out.println("Bogie " + bogieId + " removed.");
+                uniqueBogieIds.remove(bogieId);
+                System.out.println("Bogie " + bogieId + " removed successfully.");
                 found = true;
                 break;
             }
@@ -49,48 +63,33 @@ class Train {
         }
     }
 
-    // Check if bogie exists
-    void searchBogie(String bogieId) {
-        for (Bogie b : bogies) {
-            if (b.bogieId.equals(bogieId)) {
-                System.out.println("Bogie " + bogieId + " exists.");
-                return;
-            }
-        }
-        System.out.println("Bogie " + bogieId + " does not exist.");
-    }
-
     // Display all bogies
     void displayBogies() {
         System.out.println("Train: " + trainName);
         System.out.println("Total Bogies: " + bogies.size());
-
         for (Bogie b : bogies) {
-            System.out.println(b.bogieId + " - " + b.type + " - Capacity: " + b.capacity);
+            System.out.println(b);
         }
     }
 }
 
 // Main Class
-public class UC2 {
+public class UC3 {
 
     public static void main(String[] args) {
 
         Train train = new Train("Express Line");
 
         // Add bogies
-        train.addBogie(new Bogie("B1", "Sleeper", 72));
-        train.addBogie(new Bogie("B2", "AC", 50));
-        train.addBogie(new Bogie("B3", "General", 90));
+        train.addBogie(new Bogie("BG101", "Sleeper", 72));
+        train.addBogie(new Bogie("BG102", "AC", 50));
+        train.addBogie(new Bogie("BG101", "General", 90)); // Duplicate
 
-        // Display
+        // Display all bogies
         train.displayBogies();
 
-        // Search bogie
-        train.searchBogie("B2");
-
-        // Remove bogie
-        train.removeBogie("B2");
+        // Remove a bogie
+        train.removeBogie("BG102");
 
         // Display after removal
         train.displayBogies();
